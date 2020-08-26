@@ -46,7 +46,13 @@ func validateArgs(args []string) string {
 }
 
 func createFile(fileName string, markdown []string) {
-	fileName += ".html"
+	if _, err := os.Stat("output"); os.IsNotExist(err) {
+		os.Mkdir("output", 0755)
+	}
+	fileName = fmt.Sprintf("%s/%s.%s", "output", fileName, "html")
+	if _, err := os.Stat(fileName); err == nil {
+		os.Remove(fileName)
+	}
 	f, err := os.Create(fileName)
 	if err != nil {
 		log.Fatal(err)
