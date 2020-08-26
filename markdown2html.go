@@ -4,11 +4,14 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
 )
+
+var compiledRegex = regexp.MustCompile(`\[[^][]+]\((https?://[^()]+)\)`)
 
 func readFile(arg string) []string {
 	file, err := os.Open(arg)
@@ -52,11 +55,15 @@ func modifyLink(line, md, url string) string {
 }
 
 func searchForLinks(line string) string {
-	compiledRegex := regexp.MustCompile(`\[[^][]+]\((https?://[^()]+)\)`)
 	links := compiledRegex.FindAllStringSubmatch(line, -1)
-
-	for link := range links {
-		line = modifyLink(line, links[link][0], links[link][1])
+	if len(links) > 0 {
+		for link := range links {
+			_, err := url.ParseRequestURI(links[link][1])
+			if err != nil {
+				log.Fatal(err)
+			}
+			line = modifyLink(line, links[link][0], links[link][1])
+		}
 	}
 	return line
 }
