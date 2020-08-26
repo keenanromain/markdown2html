@@ -60,6 +60,9 @@ func createHTMLcontent(line string) string {
 	if tag == "</ br>" {
 		return tag
 	}
+	if strings.HasPrefix(tag, "h") {
+		line = strings.Trim(line, "#")
+	}
 	return fmt.Sprintf("<%s>%s</%s>", tag, line, tag)
 }
 
