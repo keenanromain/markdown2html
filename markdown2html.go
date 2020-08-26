@@ -9,7 +9,6 @@ import (
 )
 
 func readFile(arg string) []string {
-	// see if there is a better/safer way to open a file, particularly when the files are in a subdirectory
 	file, err := os.Open(arg)
 	if err != nil {
 		log.Fatalln(err)
@@ -45,6 +44,24 @@ func validateArgs(args []string) string {
 	return fileName[0 : len(fileName)-len(extension)]
 }
 
+func createHTMLboilerplate(fileName string, markdown []string) string {
+	html := `
+	<!DOCTYPE html>
+	<html>
+		<head>
+		<meta charset="utf-8" name="viewport">
+		<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+		<title>` + filepath.Base(fileName) + `</title>
+		</head>
+		<body>`
+
+	for _, line := range markdown {
+		html += line
+	}
+	html += "</body></html>"
+	return html
+}
+
 func createFile(fileName string, markdown []string) {
 	if _, err := os.Stat("output"); os.IsNotExist(err) {
 		os.Mkdir("output", 0755)
@@ -55,17 +72,14 @@ func createFile(fileName string, markdown []string) {
 	}
 	f, err := os.Create(fileName)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln(err)
 	}
 	defer f.Close()
 
-	html := ""
-	for _, line := range markdown {
-		html += line
-	}
+	html := createHTMLboilerplate(fileName, markdown)
 	f.WriteString(html)
 
-	fmt.Println("here!")
+	fmt.Println(fmt.Sprintf("Finished! Your new HTML file can be found in %s", fileName))
 }
 
 func main() {
