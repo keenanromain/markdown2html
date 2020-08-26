@@ -35,7 +35,21 @@ func readFile(arg string) []string {
 }
 
 func printUsage() {
-	fmt.Println("Testing...")
+	usage := `
+
+	To execute this program successfully, be sure to specify the full path of an MD file as an argument.
+	There are some located inside the input directory of this project.
+	Otherwise, provide a different MD as long as you specify the full path to it as well.
+	
+	E.g.:
+	
+		1.) go run markdown2html.go input/sample1.md
+		
+		2.) go build markdown2html.go
+		   ./markdown2html /path/to/your/input/file.md	
+		
+	`
+	println(usage)
 	os.Exit(0)
 }
 
