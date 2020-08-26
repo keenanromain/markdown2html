@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func readFile(arg string) []string {
@@ -44,22 +45,32 @@ func validateArgs(args []string) string {
 	return fileName[0 : len(fileName)-len(extension)]
 }
 
-func createHTMLboilerplate(fileName string, markdown []string) string {
-	html := `
-	<!DOCTYPE html>
-	<html>
-		<head>
-		<meta charset="utf-8" name="viewport">
-		<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-		<title>` + filepath.Base(fileName) + `</title>
-		</head>
-		<body>`
-
-	for _, line := range markdown {
-		html += line
+func findTagType(line string) string {
+	if strings.HasPrefix(line, "#") {
+		return fmt.Sprintf("h%d", strings.Count(line, "#"))
+	} else if len(line) > 0 {
+		return "p"
+	} else {
+		return "</ br>"
 	}
-	html += "</body></html>"
-	return html
+}
+
+func createHTMLcontent(line string) string {
+	tag := findTagType(line)
+	if tag == "</ br>" {
+		return tag
+	}
+	return fmt.Sprintf("<%s>%s</%s>", tag, line, tag)
+}
+
+func createHTMLwrapper(fileName string, markdown []string) string {
+	html := `<!DOCTYPE html><html><head><meta charset="utf-8" name="viewport">
+		<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+		<title>` + filepath.Base(fileName) + `</title></head><body>`
+	for _, line := range markdown {
+		html += createHTMLcontent(line)
+	}
+	return html + "</body></html>"
 }
 
 func createFile(fileName string, markdown []string) {
@@ -76,9 +87,8 @@ func createFile(fileName string, markdown []string) {
 	}
 	defer f.Close()
 
-	html := createHTMLboilerplate(fileName, markdown)
+	html := createHTMLwrapper(fileName, markdown)
 	f.WriteString(html)
-
 	fmt.Println(fmt.Sprintf("Finished! Your new HTML file can be found in %s", fileName))
 }
 
