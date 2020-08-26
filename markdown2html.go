@@ -11,7 +11,9 @@ import (
 	"strings"
 )
 
-var compiledRegex = regexp.MustCompile(`\[[^][]+]\((https?://[^()]+)\)`)
+var compiledLinkRegex = regexp.MustCompile(`\[[^][]+]\((https?://[^()]+)\)`)
+var compiledItalicsRegex = regexp.MustCompile(`\**(?:^|[^*])(\*(\w+(\s\w+)*)\*)`)
+var compiledBoldRegex = regexp.MustCompile(`\**(?:^|[^*])(\*\*(\w+(\s\w+)*)\*\*)`)
 
 func readFile(arg string) []string {
 	file, err := os.Open(arg)
@@ -55,7 +57,7 @@ func modifyLink(line, md, url string) string {
 }
 
 func searchForLinks(line string) string {
-	links := compiledRegex.FindAllStringSubmatch(line, -1)
+	links := compiledLinkRegex.FindAllStringSubmatch(line, -1)
 	if len(links) > 0 {
 		for link := range links {
 			_, err := url.ParseRequestURI(links[link][1])
@@ -63,6 +65,27 @@ func searchForLinks(line string) string {
 				log.Fatal(err)
 			}
 			line = modifyLink(line, links[link][0], links[link][1])
+		}
+	}
+	return line
+}
+
+func modifyBoldOrItalics(line, md, tag string) string {
+	modification := fmt.Sprintf("<%s>%s</%s>", tag, strings.Trim(md, "*"), tag)
+	return strings.Replace(line, md, modification, 1)
+}
+
+func searchForBoldOrItalics(line string) string {
+	bolds := compiledBoldRegex.FindAllStringSubmatch(line, -1)
+	if len(bolds) > 0 {
+		for bold := range bolds {
+			line = modifyBoldOrItalics(line, bolds[bold][1], "strong")
+		}
+	}
+	italics := compiledItalicsRegex.FindAllStringSubmatch(line, -1)
+	if len(italics) > 0 {
+		for italic := range italics {
+			line = modifyBoldOrItalics(line, italics[italic][1], "em")
 		}
 	}
 	return line
@@ -86,7 +109,9 @@ func createHTMLcontent(line string) string {
 	if strings.HasPrefix(tag, "h") {
 		line = strings.Trim(line, "#")
 	}
-	return fmt.Sprintf("<%s>%s</%s>", tag, searchForLinks(line), tag)
+	line = searchForLinks(line)
+	line = searchForBoldOrItalics(line)
+	return fmt.Sprintf("<%s>%s</%s>", tag, line, tag)
 }
 
 func createHTMLwrapper(fileName string, markdown []string) string {
