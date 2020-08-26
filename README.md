@@ -1,5 +1,7 @@
 # markdown2html
 
+
+## Summary
 This is a small Go program that takes in markdown file as an argument and produces a matching HTML file.
 It was written under a time contraint so the features included are limited in scope. 
 The code works such that it would input markdown liket he following:
@@ -35,6 +37,7 @@ What's going on?</p>
 <h2>This is a header <a href="http://yahoo.com">with a link</a></h2>
 ```
 
+## Features
 The full list of supported features is below:
 
 | Markdown                               | HTML                                              |
@@ -48,3 +51,13 @@ The full list of supported features is below:
 | `Blank line`                           | `Ignored`                                         | 
 | `** Bold **`                           | `<strong>Bold</strong>`                           |
 | `* Italitcs *`                         | `<em>Italics</em>`                                |
+
+## Improvements
+There are always points of improvements with any project. Given enough time, I'd would have liked to have done the following:
+
+- Include CSS styling on the rendered HTML 
+- Include support for pulling a markdown file off the internet
+- Include multiple markdown files as input
+- Divide the Go file across multiple files
+- Incorporate more in-depth testing
+- Include support for ordered and unordered HTML lists
