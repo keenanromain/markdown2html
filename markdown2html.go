@@ -46,10 +46,18 @@ func validateArgs(args []string) string {
 	return fileName[0 : len(fileName)-len(extension)]
 }
 
+func modifyLink(line, md, url string) string {
+	modification := fmt.Sprintf("<a href=\"%s\">%s</a>", url, md[1:strings.IndexByte(md, ']')])
+	return strings.Replace(line, md, modification, 1)
+}
+
 func searchForLinks(line string) string {
 	compiledRegex := regexp.MustCompile(`\[[^][]+]\((https?://[^()]+)\)`)
 	links := compiledRegex.FindAllStringSubmatch(line, -1)
-	fmt.Println(links)
+
+	for link := range links {
+		line = modifyLink(line, links[link][0], links[link][1])
+	}
 	return line
 }
 
