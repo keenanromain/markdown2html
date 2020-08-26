@@ -2,9 +2,9 @@
 
 
 ## Summary
-This is a small Go program that takes in markdown file as an argument and produces a matching HTML file.
-It was written under a time contraint so the features included are limited in scope. 
-The code works such that it would input markdown liket he following:
+This is a small Go program that takes in markdown file as an argument and produces a matching HTML file. 
+The corresponding HTML file is written into an `output` directory inside of this directory once the program completes.
+This project was written under a time contraint so the features included are limited in scope. It takes the following:
 
 ```
 # Header one
@@ -20,7 +20,7 @@ This is a paragraph [with an inline link](http://google.com). Neat, eh?
 
 ## This is a header [with a link](http://yahoo.com)
 ```
-and produce HTML that looks like the following:
+and produce HTML that looks like:
 
 ```
 <h1>Header one</h1>
