@@ -38,10 +38,8 @@ func printUsage() {
 	usage := `
 
 	To execute this program successfully, be sure to specify the full path of an MD file as an argument.
-	There are some located inside the input directory of this project.
-	Otherwise, provide a different MD as long as you specify the full path to it as well.
 	
-	E.g.:
+	Example usage:
 	
 		1.) go run markdown2html.go input/sample1.md
 		
