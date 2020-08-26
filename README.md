@@ -56,6 +56,7 @@ The full list of supported features is below:
 There are always points of improvements with any project. Given enough time, I'd would have liked to have done the following:
 
 - Include CSS styling on the rendered HTML 
+- Include support for images
 - Include support for pulling a markdown file off the internet
 - Include multiple markdown files as input
 - Divide the Go file across multiple files
