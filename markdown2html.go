@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -45,6 +46,13 @@ func validateArgs(args []string) string {
 	return fileName[0 : len(fileName)-len(extension)]
 }
 
+func searchForLinks(line string) string {
+	compiledRegex := regexp.MustCompile(`\[[^][]+]\((https?://[^()]+)\)`)
+	links := compiledRegex.FindAllStringSubmatch(line, -1)
+	fmt.Println(links)
+	return line
+}
+
 func findTagType(line string) string {
 	if strings.HasPrefix(line, "#") {
 		return fmt.Sprintf("h%d", strings.Count(line, "#"))
@@ -63,7 +71,7 @@ func createHTMLcontent(line string) string {
 	if strings.HasPrefix(tag, "h") {
 		line = strings.Trim(line, "#")
 	}
-	return fmt.Sprintf("<%s>%s</%s>", tag, line, tag)
+	return fmt.Sprintf("<%s>%s</%s>", tag, searchForLinks(line), tag)
 }
 
 func createHTMLwrapper(fileName string, markdown []string) string {
