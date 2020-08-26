@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
 func readFile(arg string) []string {
@@ -42,12 +41,30 @@ func validateArgs(args []string) string {
 	if extension != ".md" {
 		printUsage()
 	}
-	return args[1][strings.Index(args[1], "/")+1 : len(args[1])-len(extension)]
+	fileName := filepath.Base(args[1])
+	return fileName[0 : len(fileName)-len(extension)]
+}
+
+func createFile(fileName string, markdown []string) {
+	fileName += ".html"
+	f, err := os.Create(fileName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+
+	html := ""
+	for _, line := range markdown {
+		html += line
+	}
+	f.WriteString(html)
+
+	fmt.Println("here!")
 }
 
 func main() {
 	args := os.Args
 	fileName := validateArgs(args)
 	markdown := readFile(args[1])
-	fmt.Println(fileName, markdown)
+	createFile(fileName, markdown)
 }
